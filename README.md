@@ -32,7 +32,8 @@ An End-To-End MLOps Project Based on DL implementing a complete pipeline from da
 │           └── __init__.py
 │
 ├── research/
-│   └── trials.ipynb
+│   ├── trials.ipynb
+│   └── test_01_data_ingestion.ipynb
 │
 ├── templates/
 │   └── index.html
