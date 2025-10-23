@@ -16,7 +16,8 @@ An End-To-End MLOps Project Based on DL implementing a complete pipeline from da
 │       │   ├── __init__.py
 │       │   ├── comp_01_data_ingestion.py
 │       │   ├── comp_02_prepare_base_model.py
-│       │   └── comp_03_model_trainer.py
+│       │   ├── comp_03_model_trainer.py
+│       │   └── comp_04_model_evaluation.py
 │       │
 │       ├── utils/
 │       │   └── __init__.py
@@ -29,7 +30,8 @@ An End-To-End MLOps Project Based on DL implementing a complete pipeline from da
 │       │   ├── __init__.py
 │       │   ├── stage_01_data_ingestion.py
 │       │   ├── stage_02_prepare_base_model.py
-│       │   └── stage_03_model_trainer.py
+│       │   ├── stage_03_model_trainer.py
+│       │   └── stage_04_model_evaluation.py
 │       │
 │       ├── entity/
 │       │   └── __init__.py
