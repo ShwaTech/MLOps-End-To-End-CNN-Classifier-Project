@@ -9,11 +9,12 @@ An End-To-End MLOps Project Based on DL implementing a complete pipeline from da
 │   └── config.yaml
 │
 ├── src/
-│   └── <project_name>/
+│   └── cnnClassifier/
 │       ├── __init__.py
 │       │
 │       ├── components/
-│       │   └── __init__.py
+│       │   ├── __init__.py
+│       │   └── comp_01_data_ingestion.py
 │       │
 │       ├── utils/
 │       │   └── __init__.py
@@ -23,7 +24,8 @@ An End-To-End MLOps Project Based on DL implementing a complete pipeline from da
 │       │   └── configuration.py
 │       │
 │       ├── pipeline/
-│       │   └── __init__.py
+│       │   ├── __init__.py
+│       │   └── stage_01_data_ingestion.py
 │       │
 │       ├── entity/
 │       │   └── __init__.py
@@ -40,6 +42,7 @@ An End-To-End MLOps Project Based on DL implementing a complete pipeline from da
 │
 ├── dvc.yaml
 ├── params.yaml
+├── main.py
 ├── requirements.txt
 └── setup.py
 ```
