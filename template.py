@@ -18,12 +18,13 @@ list_of_files = [
     f"src/{project_name}/entity/__init__.py",
     f"src/{project_name}/constants/__init__.py",
     "config/config.yaml",
+    "research/trials.ipynb",
+    "research/test_01_data_ingestion.ipynb",
+    "templates/index.html",
     "dvc.yaml",
     "params.yaml",
     "requirements.txt",
     "setup.py",
-    "research/trials.ipynb",
-    "templates/index.html"
 ]
 
 
