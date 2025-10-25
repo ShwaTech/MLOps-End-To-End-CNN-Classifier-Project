@@ -31,7 +31,8 @@ An End-To-End MLOps Project Based on DL implementing a complete pipeline from da
 │       │   ├── stage_01_data_ingestion.py
 │       │   ├── stage_02_prepare_base_model.py
 │       │   ├── stage_03_model_trainer.py
-│       │   └── stage_04_model_evaluation.py
+│       │   ├── stage_04_model_evaluation.py
+│       │   └── stage_05_prediction_pipeline.py
 │       │
 │       ├── entity/
 │       │   └── __init__.py
@@ -46,9 +47,13 @@ An End-To-End MLOps Project Based on DL implementing a complete pipeline from da
 ├── templates/
 │   └── index.html
 │
+├── model/
+│   └── model.h5
+│
 ├── dvc.yaml
 ├── params.yaml
 ├── main.py
+├── app.py
 ├── requirements.txt
 └── setup.py
 ```
