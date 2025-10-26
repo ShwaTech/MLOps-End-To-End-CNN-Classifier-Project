@@ -2,64 +2,81 @@ pipeline {
   agent any
 
   environment {
-    ECR_REPOSITORY = credentials('ECR_REPOSITORY')
-    AWS_ACCOUNT_ID = credentials('AWS_ACCOUNT_ID')
-    AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
+    ECR_REPOSITORY       = credentials('ECR_REPOSITORY')
+    AWS_ACCOUNT_ID       = credentials('AWS_ACCOUNT_ID')
+    AWS_ACCESS_KEY_ID    = credentials('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
-    AWS_DEFAULT_REGION = credentials('AWS_DEFAULT_REGION')
+    AWS_DEFAULT_REGION   = credentials('AWS_DEFAULT_REGION')
   }
-  
+
   stages {
     stage('Continuous Integration') {
       steps {
         script {
-          echo "Linting repository"
-          echo "Running unit tests"
+          echo "✅ Linting repository"
+          echo "✅ Running unit tests"
         }
       }
     }
-  
+
     stage('Build and Push Image on EC2') {
       steps {
-        sshagent(['ssh_key']) {
+        sshagent(['ubuntu']) {
           sh '''
-            ssh -o StrictHostKeyChecking=no -l ubuntu 3.232.58.183 "
-              echo '--- Logging into ECR ---' &&
+            ssh -o StrictHostKeyChecking=no ubuntu@3.232.58.183 "
+              echo '--- 🧹 Cleaning old project ---' &&
+              cd /home/ubuntu &&
+              rm -rf MLOps-End-To-End-CNN-Classifier-Project || true &&
+
+              echo '--- 📦 Cloning latest code ---' &&
+              git clone https://github.com/ShwaTech/MLOps-End-To-End-CNN-Classifier-Project.git &&
+              cd MLOps-End-To-End-CNN-Classifier-Project &&
+
+              echo '--- 🔐 Logging into ECR ---' &&
               aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com &&
 
-              echo '--- Building Docker Image ---' &&
-              cd /home/ubuntu/ &&
+              echo '--- 🏗️ Building Docker Image ---' &&
               docker build -t ${ECR_REPOSITORY}:latest . &&
 
-              echo '--- Pushing Docker Image ---' &&
+              echo '--- 🚀 Pushing Docker Image to ECR ---' &&
               docker push ${ECR_REPOSITORY}:latest
             "
           '''
         }
       }
     }
-  
+
     stage('Continuous Deployment') {
       steps {
-        sshagent(['ssh_key']) {
+        sshagent(['ubuntu']) {
           sh '''
-            ssh -o StrictHostKeyChecking=no -l ubuntu 44.215.220.137 "
-              cd /home/ubuntu/ && wget https://raw.githubusercontent.com/entbappy/Chest-Disease-Classification-from-Chest-CT-Scan-Image/main/docker-compose.yml
-              export IMAGE_NAME=${ECR_REPOSITORY}:latest
-              aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com
-              docker compose up -d
+            ssh -o StrictHostKeyChecking=no ubuntu@3.232.58.183 "
+              echo '--- 🔄 Updating container ---' &&
+              cd /home/ubuntu/MLOps-End-To-End-CNN-Classifier-Project &&
+              
+              # pull latest image
+              docker pull ${ECR_REPOSITORY}:latest &&
+
+              # stop & remove old containers (optional safety)
+              docker compose down || true &&
+
+              # start with new image
+              docker compose up -d &&
+
+              echo '--- ✅ Deployment complete ---'
             "
           '''
         }
       }
     }
   }
-  
+
   post {
     always {
-      sshagent(['ssh_key']) {
+      echo "🧹 Cleaning up Docker resources on EC2..."
+      sshagent(['ubuntu']) {
         sh '''
-          ssh -o StrictHostKeyChecking=no -l ubuntu 3.232.58.183 "docker system prune -f"
+          ssh -o StrictHostKeyChecking=no ubuntu@3.232.58.183 "docker system prune -f || true"
         '''
       }
     }
