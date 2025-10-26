@@ -41,7 +41,6 @@ pipeline {
       }
     }
   
-    // This Configration Because My Local Mackine Is Already Ubuntu ???
     stage('Continuous Deployment') {
       steps {
         sh '''
@@ -54,7 +53,7 @@ pipeline {
       }
     }
   }
-  
+
   post {
     always {
       sh 'docker system prune -f'
