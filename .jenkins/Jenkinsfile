@@ -23,7 +23,7 @@ pipeline {
       steps {
         sshagent(['ssh_key']) {
           sh '''
-            ssh -o StrictHostKeyChecking=no ubuntu 3.232.58.183 "
+            ssh -o StrictHostKeyChecking=no -l ubuntu 3.232.58.183 "
               echo '--- Logging into ECR ---' &&
               aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com &&
 
@@ -43,7 +43,7 @@ pipeline {
       steps {
         sshagent(['ssh_key']) {
           sh '''
-            ssh -o StrictHostKeyChecking=no ubuntu 3.232.58.183 "
+            ssh -o StrictHostKeyChecking=no -l ubuntu 3.232.58.183 "
               echo '--- Deploying Container ---' &&
               cd /home/ubuntu &&
               wget -O docker-compose.yml https://raw.githubusercontent.com/entbappy/Chest-Disease-Classification-from-Chest-CT-Scan-Image/main/docker-compose.yml &&
@@ -61,7 +61,7 @@ pipeline {
     always {
       sshagent(['ssh_key']) {
         sh '''
-          ssh -o StrictHostKeyChecking=no ubuntu 3.232.58.183 "docker system prune -f"
+          ssh -o StrictHostKeyChecking=no -l ubuntu 3.232.58.183 "docker system prune -f"
         '''
       }
     }
