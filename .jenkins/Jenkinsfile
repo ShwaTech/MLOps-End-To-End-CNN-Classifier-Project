@@ -28,7 +28,7 @@ pipeline {
               aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com &&
 
               echo '--- Building Docker Image ---' &&
-              cd /home/ubuntu/your-project &&
+              cd /home/ubuntu/ &&
               docker build -t ${ECR_REPOSITORY}:latest . &&
 
               echo '--- Pushing Docker Image ---' &&
