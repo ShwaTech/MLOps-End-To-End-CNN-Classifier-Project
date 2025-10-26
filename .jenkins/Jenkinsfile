@@ -64,11 +64,7 @@ pipeline {
               # Login to ECR
               aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com &&
 
-              # Pull the latest image
-              docker pull ${ECR_REPOSITORY}:latest &&
-
-              # Restart containers with the new image
-              docker compose down || true &&
+              # Run Docker Compose
               docker compose up -d &&
 
               echo '--- ✅ Deployment complete ---'
