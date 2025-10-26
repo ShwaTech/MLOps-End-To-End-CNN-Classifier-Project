@@ -50,7 +50,7 @@ pipeline {
       steps {
         sshagent(['ssh_key']) {
           sh '''
-            ssh -o StrictHostKeyChecking=no ubuntu@44.215.220.137 "
+            ssh -o StrictHostKeyChecking=no ubuntu@3.232.58.183 "
               echo '--- 🔄 Deploying container ---' &&
 
               cd /home/ubuntu/ &&
