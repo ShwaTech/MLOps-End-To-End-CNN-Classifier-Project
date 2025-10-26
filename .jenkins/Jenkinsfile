@@ -1,5 +1,6 @@
 pipeline {
   agent any
+
   environment {
     ECR_REPOSITORY = credentials('ECR_REPOSITORY')
     AWS_ACCOUNT_ID = credentials('AWS_ACCOUNT_ID')
@@ -18,26 +19,22 @@ pipeline {
       }
     }
   
-    stage('Login to ECR') {
+    stage('Build and Push Image on EC2') {
       steps {
-        script {
-          sh 'aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com'
-        }
-      }
-    }
-  
-    stage('Build Image') {
-      steps {
-        script {
-          sh 'docker build -t ${ECR_REPOSITORY}:latest .'
-        }
-      }
-    }
-  
-    stage('Push Image') {
-      steps {
-        script {
-          sh 'docker push ${ECR_REPOSITORY}:latest'
+        sshagent(['ssh_key']) {
+          sh '''
+            ssh -o StrictHostKeyChecking=no ubuntu@3.232.58.183 "
+              echo '--- Logging into ECR ---' &&
+              aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com &&
+
+              echo '--- Building Docker Image ---' &&
+              cd /home/ubuntu/your-project &&
+              docker build -t ${ECR_REPOSITORY}:latest . &&
+
+              echo '--- Pushing Docker Image ---' &&
+              docker push ${ECR_REPOSITORY}:latest
+            "
+          '''
         }
       }
     }
@@ -45,15 +42,28 @@ pipeline {
     stage('Continuous Deployment') {
       steps {
         sshagent(['ssh_key']) {
-          sh "ssh -o StrictHostKeyChecking=no -l ubuntu 3.232.58.183 'cd /home/ubuntu/ && wget https://raw.githubusercontent.com/entbappy/Chest-Disease-Classification-from-Chest-CT-Scan-Image/main/docker-compose.yml && export IMAGE_NAME=${ECR_REPOSITORY}:latest && aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com && docker compose up -d '"
+          sh '''
+            ssh -o StrictHostKeyChecking=no ubuntu@3.232.58.183 "
+              echo '--- Deploying Container ---' &&
+              cd /home/ubuntu &&
+              wget -O docker-compose.yml https://raw.githubusercontent.com/entbappy/Chest-Disease-Classification-from-Chest-CT-Scan-Image/main/docker-compose.yml &&
+              export IMAGE_NAME=${ECR_REPOSITORY}:latest &&
+              docker compose down || true &&
+              docker compose up -d
+            "
+          '''
         }
       }
     }
   }
-
+  
   post {
     always {
-      sh 'docker system prune -f'
+      sshagent(['ssh_key']) {
+        sh '''
+          ssh -o StrictHostKeyChecking=no ubuntu@3.232.58.183 "docker system prune -f"
+        '''
+      }
     }
   }
 }
