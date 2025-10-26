@@ -50,6 +50,7 @@ list_of_files = [
     "research/trials.ipynb",
     "research/test_01_data_ingestion.ipynb",
     "scripts/ec2_setup.sh",
+    "scripts/configure_jenkins_locally.sh",
     "templates/index.html",
     "dvc.yaml",
     "main.py",

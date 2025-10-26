@@ -30,7 +30,7 @@ resource "aws_security_group" "this" {
   }
 
   ingress {
-    description = "Allow App traffic on port 5000"
+    description = "Allow App traffic on port 7070"
     from_port   = 7070
     to_port     = 7070
     protocol    = "tcp"
