@@ -50,17 +50,25 @@ pipeline {
       steps {
         sshagent(['ssh_key']) {
           sh '''
-            ssh -o StrictHostKeyChecking=no ubuntu@3.232.58.183 "
-              echo '--- 🔄 Updating container ---' &&
-              cd /home/ubuntu/MLOps-End-To-End-CNN-Classifier-Project &&
-              
-              # pull latest image
+            ssh -o StrictHostKeyChecking=no ubuntu@44.215.220.137 "
+              echo '--- 🔄 Deploying container ---' &&
+
+              cd /home/ubuntu/ &&
+
+              # Download the latest docker-compose file
+              wget -O docker-compose.yml https://raw.githubusercontent.com/ShwaTech/MLOps-End-To-End-CNN-Classifier-Project/refs/heads/main/docker-compose.yml &&
+
+              # Export the image name (for docker-compose.yml)
+              export IMAGE_NAME=${ECR_REPOSITORY}:latest &&
+
+              # Login to ECR
+              aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com &&
+
+              # Pull the latest image
               docker pull ${ECR_REPOSITORY}:latest &&
 
-              # stop & remove old containers (optional safety)
+              # Restart containers with the new image
               docker compose down || true &&
-
-              # start with new image
               docker compose up -d &&
 
               echo '--- ✅ Deployment complete ---'
