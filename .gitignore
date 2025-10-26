@@ -8,6 +8,12 @@ __pycache__/
 
 # Shwa Project
 artifacts/
+secrets/
+
+# Terraform
+terraform/.terraform/
+terraform/bootstrap/.terraform/
+terraform/bootstrap/terraform.tfstate
 
 # Distribution / packaging
 .Python
