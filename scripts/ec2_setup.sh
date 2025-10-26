@@ -24,3 +24,4 @@ sudo apt install awscli -y
 ## AWS configuration
 aws configure
 
+## Now setup elastic IP on AWS
